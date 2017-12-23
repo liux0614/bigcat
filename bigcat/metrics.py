@@ -71,6 +71,7 @@ def false_negatives(y_true, y_pred):
 def precision(y_true, y_pred):
     """Precision metric for binary classification.
     Only computes a batch-wise average of precision.
+    Code cloned from Keras
     
     Args:
         y_true: The ground truth values.
@@ -88,6 +89,7 @@ def precision(y_true, y_pred):
 def recall(y_true, y_pred):
     """Recall metric for binary classification.
     Only computes a batch-wise average of recall.
+    Code cloned from Keras
     
     Args:
         y_true: The ground truth values.
