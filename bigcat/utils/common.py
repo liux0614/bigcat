@@ -1,4 +1,5 @@
 import numpy as np
+import numbers
 
 import warnings
 
@@ -39,7 +40,7 @@ def safe_indexing(X, indices):
     Returns:
         Reindexed X
     """
-    if hasattr(X, "iloc"):
+    if hasattr(X, 'iloc'):
         # Work-around for indexing with read-only indices in pandas
         indices = indices if indices.flags.writeable else indices.copy()
         # Pandas Dataframes and Series
@@ -48,7 +49,7 @@ def safe_indexing(X, indices):
         except ValueError:
             # Cython typed memoryviews internally used in pandas do not support
             # readonly buffers.
-            warnings.warn("Copying input dataframe for slicing.",
+            warnings.warn('Copying input dataframe for slicing.',
                           DataConversionWarning)
             return X.copy().iloc[indices]
     elif hasattr(X, 'shape'):
@@ -164,7 +165,7 @@ def _get_train_test_size(n_samples, percent_test=0.1, percent_train=None):
 
     return n_train, n_test
 
-def split_into_train_test(filenames, percent_test=0.1, percent_train=None, shuffle=True, random_state=None):
+def split_into_train_test(filenames, percent_test=0.1, percent_train=None, whether_shuffle=True, random_state=None):
     """Split filenames into train, test, (val) sets
 
     Args:
@@ -178,14 +179,14 @@ def split_into_train_test(filenames, percent_test=0.1, percent_train=None, shuff
         test_set: test set
         val_set: if percent_test + percent_train < 1, then valset will be returned
     """
-    filesnames, class_names = get_filenames_and_classes(dataset_dir)
-    shuffled_images = shuffle(filesnames, random_state) if shuffle
+    if whether_shuffle:
+        filenames = shuffle(filenames, random_state)
 
-    n_samples = len(filesnames)
+    n_samples = len(filenames)
     n_train, n_test = _get_train_test_size(n_samples, percent_test, percent_train)
 
     sum_train_test = n_train + n_test
     if sum_train_test < n_samples:
-        return filesnames[:n_train], filesnames[n_train:sum_train_test], filesnames[sum_train_test:]
+        return filenames[:n_train], filenames[n_train:sum_train_test], filenames[sum_train_test:]
     else:
-        return filesnames[:n_train], filesnames[n_train:]
+        return filenames[:n_train], filenames[n_train:]
