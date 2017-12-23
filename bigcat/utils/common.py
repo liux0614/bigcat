@@ -125,12 +125,12 @@ def _validate_split_proportions(n_samples, proportions=None):
     else:
         proportions = np.asarray(proportions)
     
-    if np.sum(proportions) <> 1.0:
+    if np.sum(proportions) != 1.0:
         raise ValueError('total proportions should be 1')
 
     n_samples_per_part = np.around(n_samples * proportions)
 
-    if np.sum(n_samples_per_part) <> n_samples:
+    if np.sum(n_samples_per_part) != n_samples:
         n_samples_per_part[-1] = n_samples - np.sum(n_samples_per_part[:-1])
 
     return n_samples_per_part
