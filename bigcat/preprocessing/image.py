@@ -7,6 +7,10 @@ from keras import backend as K
 import keras.preprocessing.image
 from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing.image import Iterator
+from keras.preprocessing.image import load_img
+from keras.preprocessing.image import img_to_array
+from keras.preprocessing.image import array_to_img
+
 
 def simpple_image_data_generator(batch_size, imagepaths, classes):
     class_indices = dict(zip(classes, range(len(classes))))
@@ -48,44 +52,40 @@ class ImageFileDataGenerator(ImageDataGenerator):
                 preprocessing_function=None,
                 data_format=None):
         super(ImageFileDataGenerator, self).__init__(
-            self,
-            featurewise_center=False,
-            samplewise_center=False,
-            featurewise_std_normalization=False,
-            samplewise_std_normalization=False,
-            zca_whitening=False,
-            zca_epsilon=1e-6,
-            rotation_range=0.,
-            width_shift_range=0.,
-            height_shift_range=0.,
-            shear_range=0.,
-            zoom_range=0.,
-            channel_shift_range=0.,
-            fill_mode='nearest',
-            cval=0.,
-            horizontal_flip=False,
-            vertical_flip=False,
-            rescale=None,
-            preprocessing_function=None,
-            data_format=None)
+            featurewise_center=featurewise_center,
+            samplewise_center=samplewise_center,
+            featurewise_std_normalization=featurewise_std_normalization,
+            samplewise_std_normalization=samplewise_std_normalization,
+            zca_whitening=zca_whitening,
+            zca_epsilon=zca_epsilon,
+            rotation_range=rotation_range,
+            width_shift_range=width_shift_range,
+            height_shift_range=height_shift_range,
+            shear_range=shear_range,
+            zoom_range=zoom_range,
+            channel_shift_range=channel_shift_range,
+            fill_mode=fill_mode,
+            cval=cval,
+            horizontal_flip=horizontal_flip,
+            vertical_flip=vertical_flip,
+            rescale=rescale,
+            preprocessing_function=preprocessing_function,
+            data_format=data_format)
     
-    def flow_from_filenames(self, filenames, image_data_generator,
+    def flow_from_filenames(self, filenames,
                             target_size=(256, 256), color_mode='rgb',
                             classes=None, class_mode='categorical',
                             batch_size=32, shuffle=True, seed=None,
-                            data_format=None, save_to_dir=None,
-                            save_prefix='', save_format='png',
-                            interpolation='nearest')
+                            save_to_dir=None, save_prefix='',
+                            save_format='png', interpolation='nearest'):
         return FilenamesIterator(
             filenames, self,
             target_size=target_size, color_mode=color_mode,
             classes=classes, class_mode=class_mode,
             data_format=self.data_format,
             batch_size=batch_size, shuffle=shuffle, seed=seed,
-            save_to_dir=save_to_dir,
-            save_prefix=save_prefix,
-            save_format=save_format,
-            interpolation=interpolation)
+            save_to_dir=save_to_dir, save_prefix=save_prefix,
+            save_format=save_format, interpolation=interpolation)
 
 class FilenamesIterator(Iterator):
     """Iterator capable of reading images from a list of filenames.
@@ -185,24 +185,24 @@ class FilenamesIterator(Iterator):
 
         white_list_formats = {'png', 'jpg', 'jpeg', 'bmp', 'ppm'}
         # second, build an mapping of the valid images and their corresponding categories
-        self.classes = np.zeros((self.samples,), dtype='int32')
-        i = 0
+        classes_of_images = []
         valid_filenames = []
-        for filename in self.filenames:
-            base_filename = os.path.basename(filename)
-            for extension in white_list_formats:
-                is_valid = False
+        for fname in self.filenames:
+            is_valid = False
+            base_fname = os.path.basename(fname)
+            for extension in white_list_formats:                
                 if fname.lower().endswith('.' + extension):
                     is_valid = True
                     break
-                if is_valid:
-                    subdir = os.path.basename(os.path.dirname(filename)) # class this file belongs to
-                    self.classes.append(class_indices[subdir])
-                    valid_filenames += filename
+            if is_valid:
+                subdir = os.path.basename(os.path.dirname(fname)) # class this file belongs to
+                classes_of_images.append(self.class_indices[subdir])
+                valid_filenames.append(fname)
         self.filenames = valid_filenames
         self.samples = len(self.filenames)
-        print('Files ended with one of %s will be recognized as images. '
-              'By scanning, %d files are valid.' % (white_list_formats, self.samples)
+        self.classes = np.asarray(classes_of_images, dtype='int32')
+        print('By scanning, %d files are valid.Files ended with one of %s '
+              'will be recognized as images. ' % (self.samples, white_list_formats))
 
         super(FilenamesIterator, self).__init__(self.samples, batch_size, shuffle, seed)
 
