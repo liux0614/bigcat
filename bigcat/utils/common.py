@@ -62,7 +62,7 @@ def safe_indexing(X, indices):
     else:
         return [X[idx] for idx in indices]
 
-def shuffle(array_to_shuffle, random_state=None):
+def shuffle_array(array_to_shuffle, random_state=None):
     """Shuffle array. If the array is a multi-dimensional array, 
     this function only shuffles along the first dimension.
 
@@ -165,7 +165,7 @@ def _get_train_test_size(n_samples, percent_test=0.1, percent_train=None):
 
     return n_train, n_test
 
-def split_into_train_test(filenames, percent_test=0.1, percent_train=None, whether_shuffle=True, random_state=None):
+def split_into_train_test(filenames, percent_test=0.1, percent_train=None, shuffle=True, random_state=None):
     """Split filenames into train, test, (val) sets
 
     Args:
@@ -179,8 +179,8 @@ def split_into_train_test(filenames, percent_test=0.1, percent_train=None, wheth
         test_set: test set
         val_set: if percent_test + percent_train < 1, then valset will be returned
     """
-    if whether_shuffle:
-        filenames = shuffle(filenames, random_state)
+    if shuffle:
+        filenames = shuffle_array(filenames, random_state)
 
     n_samples = len(filenames)
     n_train, n_test = _get_train_test_size(n_samples, percent_test, percent_train)

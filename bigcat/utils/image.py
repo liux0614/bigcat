@@ -2,8 +2,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image as pil_image
-from .common import shuffle
+import cv2
 
 def copy_and_move_images(image_names, output_dir, resize=None):
     """Copy and move the given image files to the output dir.
