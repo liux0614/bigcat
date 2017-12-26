@@ -68,6 +68,7 @@ class ImageFileDataGenerator(ImageDataGenerator):
             rescale=None,
             preprocessing_function=None,
             data_format=None)
+    
     def flow_from_filenames(self, filenames, image_data_generator,
                             target_size=(256, 256), color_mode='rgb',
                             classes=None, class_mode='categorical',
@@ -127,8 +128,7 @@ class FilenamesIterator(Iterator):
     
     Raises:
         ValueError: in case color mode and class_mode are invalid,
-            and classes is None
-    
+            and classes is None    
     """
 
     def __init__(self, filenames, image_data_generator,
